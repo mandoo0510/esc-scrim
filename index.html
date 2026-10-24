@@ -155,6 +155,27 @@ footer b{font-family:var(--disp);letter-spacing:.2em;color:var(--muted);font-wei
   .hero{padding:28px 0 20px}
 }
 
+/* OBS panel */
+.obs-btn{height:36px;padding:0 14px;border:1px solid var(--y);background:transparent;color:var(--y);font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.14em;cursor:pointer;border-radius:2px}
+.obs-btn:hover{background:var(--y);color:var(--yink)}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:50;padding:20px}
+.dlg[hidden]{display:none}
+.dlg .box{width:min(560px,100%);background:var(--panel);border:1px solid var(--line2);padding:22px 22px 20px}
+.dlg h2{margin:0 0 4px;font-family:var(--disp);font-weight:800;font-size:26px;letter-spacing:.06em;text-transform:uppercase}
+.dlg p{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.7}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.opts label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.opts select{max-width:none;width:100%}
+.url{display:flex;gap:8px}
+.url input{flex:1;min-width:0;background:#0B0C0E;border:1px solid var(--line2);color:var(--text);font:12px ui-monospace,Menlo,monospace;padding:10px}
+.btn{border:1px solid var(--line2);background:var(--panel2);padding:0 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap}
+a.btn{color:var(--text)}
+.btn.y{background:var(--y);border-color:var(--y);color:var(--yink)}
+.howto{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.8}
+.howto b{color:var(--text)}
+.x{float:right;background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+@media (max-width:560px){.opts{grid-template-columns:minmax(0,1fr)}}
+
 /* OBS overlay */
 body.obs{background:transparent}
 body.obs::before,body.obs nav,body.obs .hero,body.obs .bar,body.obs .podium,body.obs footer,body.obs .note{display:none}
@@ -173,6 +194,7 @@ body.obs .obs-head{display:flex}
     <div class="navr">
       <select id="pick" aria-label="스크림 시트 선택" hidden></select>
       <span class="live" id="live"><i></i><span id="liveT">CONNECTING</span></span>
+      <button class="obs-btn" id="obsBtn" aria-haspopup="dialog">OBS</button>
       <button class="icon-btn" id="full" title="전체 화면" aria-label="전체 화면"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4"/></svg></button>
     </div>
   </nav>
@@ -211,6 +233,21 @@ body.obs .obs-head{display:flex}
     <div>시트에 점수를 입력하면 자동으로 반영돼요</div>
   </div>
 
+  <div class="dlg" id="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dlgT">
+    <div class="box cut">
+      <button class="x" id="dlgX" aria-label="닫기">×</button>
+      <h2 id="dlgT">OBS 방송 화면</h2>
+      <p>배경이 투명한 리더보드예요. 아래 주소를 OBS 브라우저 소스에 넣으면 시트 점수가 자동으로 바뀌어요.</p>
+      <div class="opts">
+        <label>매치<select id="oMatch"><option value="">최신 매치 자동</option></select></label>
+        <label>보기<select id="oMode"><option value="">누적 순위</option><option value="one">이 매치만</option></select></label>
+        <label>표시 팀 수<select id="oTop"><option value="">전체</option><option>16</option><option>10</option><option>8</option><option>5</option><option>3</option></select></label>
+      </div>
+      <div class="url"><input id="oUrl" readonly aria-label="OBS 주소"><button class="btn y" id="oCopy">복사</button><a class="btn" id="oOpen" target="_blank" rel="noopener" style="display:grid;place-items:center;text-decoration:none">미리보기</a></div>
+      <div class="howto"><b>OBS 설정</b> · 소스 추가 → 브라우저 → URL에 붙여넣기 → 너비 <b>400</b>, 높이 <b>760</b> (17팀 기준).<br>크기는 OBS에서 늘리거나 주소 끝에 <b>&amp;scale=1.3</b> 을 붙여 키울 수 있어요.</div>
+    </div>
+  </div>
+
   <footer><b>ESC SCRIM</b><span id="foot">&nbsp;</span></footer>
 </div>
 
@@ -222,7 +259,7 @@ body.obs .obs-head{display:flex}
 
   var q = new URLSearchParams(location.search);
   var ID = q.get('id') || DEFAULT_ID;
-  if (q.get('obs') === '1') document.body.className = 'obs';
+  if (q.get('obs') === '1') { var oq = new URLSearchParams(location.search); oq.delete('obs'); location.replace('obs.html' + (oq.toString() ? '?' + oq : '')); return; }
   var D = null, sel = q.get('match') ? Math.max(0, parseInt(q.get('match'), 10) - 1) : null, mode = 'cum', logos = {}, asked = {}, lastSig = '';
 
   function $(id){ return document.getElementById(id); }
@@ -354,6 +391,32 @@ body.obs .obs-head{display:flex}
   $('mOne').onclick = function(){ mode = 'one'; render(); };
   $('pick').onchange = function(){ var u = new URL(location.href); u.searchParams.set('id', this.value); location.href = u.toString(); };
   $('full').onclick = function(){ var el = document.documentElement; if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(function(){}); else if (document.exitFullscreen) document.exitFullscreen().catch(function(){}); };
+
+  function obsUrl(){
+    var base = new URL('obs.html', location.href), p = base.searchParams;
+    if (ID !== DEFAULT_ID) p.set('id', ID);
+    if ($('oMatch').value) p.set('match', $('oMatch').value);
+    if ($('oMode').value) p.set('mode', $('oMode').value);
+    if ($('oTop').value) p.set('top', $('oTop').value);
+    return base.toString();
+  }
+  function upd(){ var u = obsUrl(); $('oUrl').value = u; var pv = new URL(u); pv.searchParams.set('preview', '1'); $('oOpen').href = pv.toString(); }
+  $('obsBtn').onclick = function(){
+    var o = '<option value="">최신 매치 자동</option>';
+    if (D) for (var m = 0; m < D.matches; m++){ var mp = String((D.maps && D.maps[m]) || '').replace(/[^A-Za-z0-9가-힣]+$/, '').trim(); o += '<option value="' + (m + 1) + '">MATCH ' + (m + 1) + (mp ? ' · ' + esc(mp) : '') + '</option>'; }
+    var keep = $('oMatch').value; $('oMatch').innerHTML = o; $('oMatch').value = keep;
+    upd(); $('dlg').hidden = false;
+  };
+  ['oMatch', 'oMode', 'oTop'].forEach(function(id){ $(id).onchange = upd; });
+  $('dlgX').onclick = function(){ $('dlg').hidden = true; };
+  $('dlg').onclick = function(e){ if (e.target === this) this.hidden = true; };
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') $('dlg').hidden = true; });
+  $('oCopy').onclick = function(){
+    var b = this, u = $('oUrl').value;
+    var done = function(){ b.textContent = '복사됨'; setTimeout(function(){ b.textContent = '복사'; }, 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(u).then(done, function(){ $('oUrl').select(); document.execCommand('copy'); done(); });
+    else { $('oUrl').select(); document.execCommand('copy'); done(); }
+  };
 
   load(); loadList(); setInterval(function(){ if (!document.hidden) load(); }, REFRESH);
 })();
