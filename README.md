@@ -2,7 +2,7 @@
 
 배그(PUBG) 스크림 실시간 리더보드 사이트입니다.
 
-- 사이트: https://mingyeong98.github.io/esc-scrim/
+- 사이트: https://mandoo510.github.io/esc-scrim/
 - 데이터: 구글 시트 점수판 → Google Apps Script 웹앱(JSON) → 이 페이지가 10초마다 자동 갱신
 - 다른 시트 보기: 주소 끝에 `?id=시트ID`
 - 방송(OBS)용 투명 화면: 주소 끝에 `?obs=1`
