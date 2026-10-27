@@ -24,19 +24,21 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
 .mt{flex:1;background:rgba(6,7,9,calc(var(--a) + .2));display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:6px 10px;min-width:0}
 .mt b{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:.06em;line-height:1;text-transform:uppercase;white-space:nowrap}
 .mt small{font-family:var(--disp);font-weight:600;font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:2px;white-space:nowrap}
-.cols,.row{display:grid;grid-template-columns:38px 30px minmax(var(--nw),1fr) 44px 48px;align-items:center}
+.cols,.row{display:grid;grid-template-columns:38px 30px 30px minmax(var(--nw),1fr) 44px 48px;align-items:center}
 .cols{background:rgba(6,7,9,calc(var(--a) + .15));font-family:var(--disp);font-weight:600;font-size:11px;letter-spacing:.12em;color:var(--muted);padding:6px 0 5px;text-transform:uppercase}
-.cols span{text-align:center}.cols .t{text-align:left;grid-column:2/4;padding-left:8px}
+.cols span{text-align:center}.cols .h{grid-column:1/3}.cols .t{text-align:left;grid-column:3/5;padding-left:6px}
 .list{background:transparent}
 .row{height:36px;background:var(--row);border-top:1px solid var(--line);transition:background .3s}
 .row:nth-child(even){background:var(--row2)}
 .rk{align-self:stretch;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:21px;background:rgba(0,0,0,.25)}
 .r1 .rk{background:var(--y);color:var(--yink)}.r2 .rk{background:var(--silver);color:#14161a}.r3 .rk{background:var(--bronze);color:#1b1107}
-.lg{width:24px;height:24px;margin-left:6px;display:grid;place-items:center;overflow:hidden;background:#0B0C0E;border:1px solid rgba(255,255,255,.1);font-family:var(--disp);font-weight:800;font-size:13px;color:var(--muted)}
+.lg{width:24px;height:24px;margin-left:4px;display:grid;place-items:center;overflow:hidden;background:#0B0C0E;border:1px solid rgba(255,255,255,.1);font-family:var(--disp);font-weight:800;font-size:13px;color:var(--muted)}
 .lg img{width:100%;height:100%;object-fit:contain}
 .nm{display:flex;align-items:center;gap:6px;padding:0 4px 0 8px;min-width:0}
 .nm b{font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chg{font-family:var(--disp);font-weight:700;font-size:12px;flex:none}.chg.up{color:var(--up)}.chg.down{color:var(--down)}
+.chg{align-self:stretch;display:flex;align-items:center;justify-content:center;gap:1px;font-family:var(--disp);font-weight:700;font-size:14px;line-height:1;font-variant-numeric:tabular-nums;background:rgba(0,0,0,.18)}
+.chg i{font-style:normal;font-size:9px}
+.chg.up{color:var(--up)}.chg.down{color:var(--down)}.chg.same{color:rgba(255,255,255,.28)}
 .pts{text-align:center;font-family:var(--disp);font-weight:800;font-size:21px;font-variant-numeric:tabular-nums}
 .r1 .pts{color:var(--y)}
 .k{text-align:center;font-family:var(--disp);font-weight:600;font-size:18px;color:#C9CBD0;font-variant-numeric:tabular-nums}
@@ -49,7 +51,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
 <body>
 <div class="ov" id="ov">
   <div class="head"><div class="tag" id="tag">ESC SCRIM</div><div class="mt"><b id="mt">OVERALL</b><small id="ms">&nbsp;</small></div></div>
-  <div class="cols"><span>#</span><span class="t">Team</span><span>Pts</span><span>Kills</span></div>
+  <div class="cols"><span class="h">#</span><span class="t">Team</span><span>Pts</span><span>Kills</span></div>
   <div class="list" id="list"><div class="msg">불러오는 중…</div></div>
   <div class="foot"></div>
 </div>
@@ -95,10 +97,10 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
     if (!only && M > 0) standings(M - 1, false).forEach(function(r){ prev[r.t.n] = r.pos; });
     if (TOP) rows = rows.slice(0, TOP);
     $('list').innerHTML = rows.map(function(r){
-      var c = '';
-      if (prev[r.t.n]) { var d = prev[r.t.n] - r.pos; if (d > 0) c = '<span class="chg up">▲' + d + '</span>'; else if (d < 0) c = '<span class="chg down">▼' + (-d) + '</span>'; }
+      var c = '<div class="chg"></div>';
+      if (prev[r.t.n]) { var d = prev[r.t.n] - r.pos; c = d > 0 ? '<div class="chg up"><i>▲</i>' + d + '</div>' : d < 0 ? '<div class="chg down"><i>▼</i>' + (-d) + '</div>' : '<div class="chg same">–</div>'; }
       var moved = lastPos[r.t.n] && lastPos[r.t.n] !== r.pos;
-      return '<div class="row r' + r.pos + (moved ? ' flash' : '') + '"><div class="rk">' + r.pos + '</div>' + logo(r.t) + '<div class="nm"><b>' + esc(r.t.name) + '</b>' + c + '</div><div class="pts">' + r.pts + '</div><div class="k">' + r.kills + '</div></div>';
+      return '<div class="row r' + r.pos + (moved ? ' flash' : '') + '"><div class="rk">' + r.pos + '</div>' + c + logo(r.t) + '<div class="nm"><b>' + esc(r.t.name) + '</b></div><div class="pts">' + r.pts + '</div><div class="k">' + r.kills + '</div></div>';
     }).join('');
     var w = 0, ns = document.querySelectorAll('.nm');
     for (var j = 0; j < ns.length; j++){ var t = 14; for (var k = 0; k < ns[j].children.length; k++) t += ns[j].children[k].scrollWidth + 6; if (t > w) w = t; }
