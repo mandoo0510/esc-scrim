@@ -20,8 +20,12 @@ html,body{margin:0;background:transparent;color:var(--text);font-family:"Noto Sa
 body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 0/24px 24px}
 .ov{width:max-content;transform-origin:top left}
 .head{display:flex;align-items:stretch;clip-path:polygon(0 0,100% 0,100% 100%,12px 100%,0 calc(100% - 12px))}
-.tag{flex:none;background:var(--y);color:var(--yink);font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:.05em;text-transform:uppercase;padding:9px 14px 7px;line-height:1;display:flex;align-items:center;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mt{flex:1;background:rgba(6,7,9,calc(var(--a) + .2));display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:6px 10px;min-width:0}
+.tag{flex:none;background:rgba(6,7,9,calc(var(--a) + .3));display:flex;align-items:center;padding:4px 8px 4px 6px;border-bottom:2px solid var(--y)}
+.tag img{height:66px;width:auto;display:block}
+.tag span{display:none}
+.tag.txt{background:var(--y);color:var(--yink);font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:.05em;text-transform:uppercase;padding:9px 14px 7px;border:0}
+.tag.txt span{display:block}
+.mt{flex:1;background:rgba(6,7,9,calc(var(--a) + .2));display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:6px 12px;min-width:0;border-bottom:2px solid var(--y)}
 .mt b{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:.06em;line-height:1;text-transform:uppercase;white-space:nowrap}
 .mt small{font-family:var(--disp);font-weight:600;font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:2px;white-space:nowrap}
 .cols,.row{display:grid;grid-template-columns:38px 30px 30px minmax(var(--nw),1fr) 44px 48px;align-items:center}
@@ -50,7 +54,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
 </head>
 <body>
 <div class="ov" id="ov">
-  <div class="head"><div class="tag" id="tag">ESC SCRIM</div><div class="mt"><b id="mt">OVERALL</b><small id="ms">&nbsp;</small></div></div>
+  <div class="head"><div class="tag" id="tag"><img src="assets/logo-sm.png" alt="ESC SCRIM" onerror="this.parentNode.classList.add('txt');this.remove()"><span id="tagT">ESC SCRIM</span></div><div class="mt"><b id="mt">OVERALL</b><small id="ms">&nbsp;</small></div></div>
   <div class="cols"><span class="h">#</span><span class="t">Team</span><span>Pts</span><span>Kills</span></div>
   <div class="list" id="list"><div class="msg">불러오는 중…</div></div>
   <div class="foot"></div>
@@ -90,7 +94,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
   function render(){
     var L = latest(), M = FIX == null ? L : Math.min(FIX, D.matches - 1), only = ONLY && M >= 0;
     var map = String((D.maps && D.maps[M]) || '').replace(/[^A-Za-z0-9가-힣]+$/, '').trim();
-    $('tag').textContent = TITLE || D.title || 'SCRIM';
+    $('tagT').textContent = TITLE || D.title || 'SCRIM';
     $('mt').textContent = M < 0 ? 'READY' : (only ? 'MATCH ' + (M + 1) : (M + 1 >= D.matches ? 'OVERALL' : 'MATCH ' + (M + 1)));
     $('ms').textContent = M < 0 ? (D.teams.length + ' TEAMS') : (only ? (map || 'MATCH RESULT') : ('AFTER ' + (M + 1) + ' / ' + D.matches + (map ? ' · ' + map : '')));
     var rows = standings(M, only), prev = {};

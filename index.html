@@ -38,6 +38,7 @@ button{font:inherit;color:inherit}
 nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0 18px;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
 .mark{display:grid;place-items:center;height:34px;padding:0 12px 0 10px;background:var(--y);color:var(--yink);font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:.04em;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.navlogo{height:44px;width:auto;display:block}
 .brand b{font-family:var(--disp);font-weight:700;font-size:20px;letter-spacing:.18em;text-transform:uppercase}
 .navr{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
 .live{display:inline-flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -52,6 +53,9 @@ select{appearance:none;background:var(--panel) url("data:image/svg+xml,%3Csvg xm
 .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:end;padding:44px 0 28px}
 .eyebrow{font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:var(--y);display:flex;align-items:center;gap:10px}
 .eyebrow::before{content:"";width:28px;height:2px;background:var(--y)}
+.logo-h1{margin:8px 0 2px;line-height:0}
+.logo-h1 img{height:clamp(120px,18vw,190px);width:auto;max-width:100%;margin-left:-6px;filter:drop-shadow(0 10px 30px rgba(0,0,0,.5))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 h1{margin:10px 0 6px;font-family:var(--disp);font-weight:800;font-size:clamp(46px,8vw,88px);line-height:.9;letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
 .date{color:var(--muted);font-size:14px;letter-spacing:.02em}
 .stats{display:grid;grid-template-columns:repeat(4,auto);gap:0;border:1px solid var(--line);background:rgba(21,23,27,.7);backdrop-filter:blur(6px)}
@@ -107,7 +111,8 @@ h1{margin:10px 0 6px;font-family:var(--disp);font-weight:800;font-size:clamp(46p
 .rk{align-self:stretch;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:28px;color:var(--text);position:relative}
 .r1 .rk{color:var(--y)}.r2 .rk{color:var(--silver)}.r3 .rk{color:var(--bronze)}
 .r1 .rk::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;background:var(--y)}
-.chg{text-align:center;font-family:var(--disp);font-weight:700;font-size:15px}
+.chg{display:flex;align-items:center;justify-content:center;gap:2px;font-family:var(--disp);font-weight:700;font-size:16px;line-height:1;overflow:hidden;font-variant-numeric:tabular-nums}
+.chg i{font-style:normal;font-size:10px}
 .chg.up{color:var(--up)}.chg.down{color:var(--down)}.chg.same{color:var(--dim)}
 .tm{display:flex;align-items:center;gap:12px;min-width:0;padding-right:10px}
 .tm .logo{width:36px;height:36px;font-size:17px}
@@ -166,7 +171,7 @@ footer b{font-family:var(--disp);letter-spacing:.2em;color:var(--muted);font-wei
 .lt[aria-pressed="true"]{border-color:var(--y);box-shadow:inset 0 0 0 1px var(--y)}
 .lt .logo{width:44px;height:44px;font-size:20px}
 .lt span{font-family:var(--disp);font-weight:700;font-size:14px;text-transform:uppercase;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.up{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center;margin-bottom:12px}
+.lup{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center;margin-bottom:12px}
 .drop{width:96px;height:96px;border:1px dashed var(--line2);display:grid;place-items:center;color:var(--dim);font-size:11px;text-align:center;cursor:pointer;background:#0B0C0E;overflow:hidden}
 .drop img{width:100%;height:100%;object-fit:contain}
 .drop.over{border-color:var(--y)}
@@ -206,7 +211,7 @@ body.obs .obs-head{display:flex}
 <body>
 <div class="wrap">
   <nav>
-    <a class="brand" href="./" aria-label="ESC SCRIM"><span class="mark">ESC</span><b>Scrim Leaderboard</b></a>
+    <a class="brand" href="./" aria-label="ESC SCRIM"><img class="navlogo" src="assets/logo-sm.png" alt="ESC SCRIM" width="64" height="48"><b>Scrim Leaderboard</b></a>
     <div class="navr">
       <select id="pick" aria-label="스크림 시트 선택" hidden></select>
       <span class="live" id="live"><i></i><span id="liveT">CONNECTING</span></span>
@@ -219,7 +224,7 @@ body.obs .obs-head{display:flex}
   <header class="hero">
     <div>
       <div class="eyebrow">PUBG · Custom Match</div>
-      <h1 id="title">ESC SCRIM</h1>
+      <h1 class="logo-h1"><img src="assets/logo.png" alt="ESC SCRIM" width="640" height="482"><span id="title" class="sr">ESC SCRIM</span></h1>
       <div class="date" id="date">&nbsp;</div>
     </div>
     <div class="stats cut" id="stats">
@@ -271,7 +276,7 @@ body.obs .obs-head{display:flex}
       <h2 id="ldlgT">팀 로고</h2>
       <p>팀을 고르고 이미지를 올리면 리더보드와 방송 화면에 바로 표시돼요. 정사각형 PNG(배경 투명)가 가장 깔끔해요.</p>
       <div class="lgrid" id="lgrid"></div>
-      <div class="up">
+      <div class="lup">
         <label class="drop" id="drop" for="lfile">이미지<br>선택 / 끌어놓기</label>
         <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
           <div class="fld">선택한 팀<input id="lteam" readonly placeholder="위에서 팀을 눌러 주세요"></div>
@@ -379,7 +384,7 @@ body.obs .obs-head{display:flex}
     $('thead').innerHTML = '<div>#</div><div></div><div class="tn">Team</div><div class="mcol"><div class="ms">' + mh + '</div></div><div class="wcol">WWCD</div><div>Kills</div><div>Pts</div>';
     $('rows').innerHTML = rows.map(function(r){
       var c = '<div class="chg same"></div>';
-      if (prev[r.t.n]) { var d = prev[r.t.n] - r.pos; c = d > 0 ? '<div class="chg up">▲' + d + '</div>' : d < 0 ? '<div class="chg down">▼' + (-d) + '</div>' : '<div class="chg same">–</div>'; }
+      if (prev[r.t.n]) { var d = prev[r.t.n] - r.pos; c = d > 0 ? '<div class="chg up"><i>▲</i>' + d + '</div>' : d < 0 ? '<div class="chg down"><i>▼</i>' + (-d) + '</div>' : '<div class="chg same">–</div>'; }
       var ms = '';
       for (var m = 0; m < D.matches; m++){
         var x = r.ranks[m], cls = 'mc' + (!x ? ' na' : x === 1 ? ' win' : x <= 3 ? ' t3' : '') + (m === M && only ? ' sel' : '');
