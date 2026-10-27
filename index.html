@@ -80,18 +80,39 @@ h1{margin:10px 0 6px;font-family:var(--disp);font-weight:800;font-size:clamp(46p
 .seg button[aria-pressed="true"]{background:var(--panel2);color:var(--text);box-shadow:inset 0 -2px 0 var(--y)}
 
 /* podium */
-.podwrap{position:relative;margin-bottom:22px}
-.podwrap[hidden]{display:none}
-.mapban{position:relative;display:none;border:1px solid var(--line);overflow:hidden;background:#d4d4d4}
-.has-map .mapban{display:block}
-.mapban img{display:block;width:100%;height:auto;aspect-ratio:826/316;object-fit:cover;object-position:center}
-.mapban::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(12,13,15,0) 0,rgba(12,13,15,0) 86%,rgba(12,13,15,.7) 100%)}
-.mapchip{position:absolute;right:14px;top:12px;z-index:1;background:rgba(12,13,15,.78);color:var(--text);font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;padding:6px 10px 5px;border-left:3px solid var(--y)}
-.mapchip{display:none!important}
-.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.has-map .podium{position:relative;z-index:1;margin-top:-34px;padding:0 18px}
-.has-map .pc{background:linear-gradient(160deg,rgba(26,28,33,.9),rgba(21,23,27,.94) 60%);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.has-map .pc.p1{background:linear-gradient(160deg,rgba(70,52,10,.92),rgba(21,23,27,.95) 62%)}
+/* arena: map backdrop + top 3 */
+.arena{position:relative;isolation:isolate;margin-bottom:22px;border:1px solid rgba(255,255,255,.07);overflow:hidden;
+  background:radial-gradient(120% 140% at 85% -10%,#1d1f24 0,#0f1013 55%,#0b0c0e 100%);padding:30px 28px 26px}
+.arena[hidden]{display:none}
+.arena-bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.arena-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:66% 42%;
+  filter:brightness(.6) contrast(1.08) saturate(.92);transform:scale(1.06);opacity:0;transition:opacity .7s ease,transform 8s ease}
+.arena-bg img.on{opacity:1;transform:scale(1.02)}
+.arena-bg::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(55% 60% at 100% 0%,rgba(11,12,14,.96) 0%,rgba(11,12,14,.75) 45%,rgba(11,12,14,0) 75%),
+  linear-gradient(90deg,rgba(11,12,14,.97) 0%,rgba(11,12,14,.82) 24%,rgba(11,12,14,.25) 56%,rgba(11,12,14,.45) 100%),
+  linear-gradient(180deg,rgba(11,12,14,.35) 0%,rgba(11,12,14,0) 30%,rgba(11,12,14,.72) 70%,rgba(11,12,14,.97) 100%)}
+.arena::before{content:"";position:absolute;left:0;top:0;width:100%;height:1px;background:linear-gradient(90deg,var(--y),rgba(242,169,0,0) 45%);z-index:1}
+.arena-head{position:relative;padding-bottom:clamp(64px,11vw,132px)}
+.arena-eb{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:600;font-size:13px;letter-spacing:.34em;text-transform:uppercase;color:var(--y)}
+.arena-eb::before{content:"";width:22px;height:1px;background:var(--y)}
+.arena-map{margin-top:8px;font-family:var(--disp);font-weight:800;font-size:clamp(46px,7.2vw,92px);line-height:.88;letter-spacing:.03em;text-transform:uppercase;color:#F5F2EA;text-shadow:0 6px 40px rgba(0,0,0,.55)}
+.arena-sub{margin-top:10px;font-size:13px;color:rgba(236,232,223,.62);letter-spacing:.02em}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end}
+.podium[hidden]{display:none}
+.podium .p1{order:2}.podium .p2{order:1}.podium .p3{order:3}
+.arena .pc{--rc:var(--silver);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  -webkit-backdrop-filter:blur(16px) saturate(1.15);backdrop-filter:blur(16px) saturate(1.15);
+  border:1px solid rgba(255,255,255,.09);border-top:2px solid var(--rc);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.arena .pc.p1{--rc:var(--y);padding:26px 24px 22px;border-color:rgba(242,169,0,.32);border-top-color:var(--y);
+  background:linear-gradient(180deg,rgba(242,169,0,.14),rgba(255,255,255,.03) 70%);box-shadow:0 24px 70px rgba(242,169,0,.14),0 18px 50px rgba(0,0,0,.4)}
+.arena .pc.p3{--rc:var(--bronze)}
+.arena .pc::after{font-size:170px;top:-34px;right:-4px;color:rgba(255,255,255,.04)}
+.arena .place{background:transparent!important;color:var(--rc)!important;border:1px solid var(--rc);padding:3px 9px 2px;font-size:12px;letter-spacing:.28em}
+.arena .pc h3{font-size:27px}
+.arena .pc.p1 h3{font-size:32px}
+.arena .pc .nums{border-top:1px solid rgba(255,255,255,.08)}
+.arena .pc.p1 .nums strong{font-size:42px}
 .pc{position:relative;background:linear-gradient(160deg,var(--panel2),var(--panel) 60%);border:1px solid var(--line);padding:20px 20px 18px;overflow:hidden;min-width:0}
 .pc::after{content:attr(data-pos);position:absolute;right:-6px;top:-22px;font-family:var(--disp);font-weight:800;font-size:150px;line-height:1;color:rgba(255,255,255,.035);pointer-events:none}
 .pc.p1{border-color:rgba(242,169,0,.55);background:linear-gradient(160deg,rgba(242,169,0,.16),var(--panel) 62%)}
@@ -149,7 +170,11 @@ footer b{font-family:var(--disp);letter-spacing:.2em;color:var(--muted);font-wei
 @keyframes fade{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
 
 @media (max-width:900px){
-  .has-map .podium{margin-top:10px;padding:0}
+  .arena{padding:22px 16px 16px}
+  .podium .p1,.podium .p2,.podium .p3{order:0}
+  .arena .pc.p1{padding:20px 18px 18px}
+  .arena-head{padding-bottom:92px}
+  .arena-bg img{object-position:52% 62%}
   .hero{grid-template-columns:minmax(0,1fr)}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stat:nth-child(3){border-left:0}
@@ -255,8 +280,9 @@ body.obs .obs-head{display:flex}
     </div>
   </div>
 
-  <section class="podwrap" id="podwrap">
-    <div class="mapban"><img id="mapimg" alt="" decoding="async"><span class="mapchip" id="mapchip"></span></div>
+  <section class="arena cut" id="podwrap">
+    <div class="arena-bg" aria-hidden="true"><img id="mapimg" alt="" decoding="async"></div>
+    <div class="arena-head"><div class="arena-eb" id="arenaEb">Standings</div><div class="arena-map" id="arenaMap">ESC SCRIM</div><div class="arena-sub" id="arenaSub"></div></div>
     <div class="podium" id="podium"></div>
   </section>
 
@@ -388,10 +414,16 @@ body.obs .obs-head{display:flex}
     var rawMap = String((D.maps && D.maps[Math.max(M, 0)]) || '').replace(/[^A-Za-z0-9가-힣]+$/, '').trim();
     var mk = KMAP[rawMap] || rawMap.toLowerCase().replace(/[^a-z]/g, '');
     var hasMap = !!MAPS[mk];
-    $('podwrap').classList.toggle('has-map', hasMap);
-    if (hasMap && $('mapimg').getAttribute('src') !== 'assets/maps/' + mk + '.jpg') { $('mapimg').src = 'assets/maps/' + mk + '.jpg'; $('mapimg').alt = rawMap + ' 맵'; }
-    $('mapchip').textContent = hasMap ? 'Match ' + (Math.max(M, 0) + 1) + ' · ' + rawMap : '';
-    $('podwrap').hidden = !started && !hasMap;
+    var img = $('mapimg'), want = hasMap ? 'assets/maps/' + mk + '.jpg' : '';
+    if (img.getAttribute('data-src') !== want){
+      img.setAttribute('data-src', want); img.classList.remove('on');
+      if (want){ img.onload = function(){ img.classList.add('on'); }; img.src = want; } else img.removeAttribute('src');
+    }
+    var mi = Math.max(M, 0) + 1;
+    $('arenaEb').textContent = 'Match ' + mi + (only ? ' · Result' : (M + 1 >= D.matches && M >= 0 ? ' · Final Standings' : ' · Standings'));
+    $('arenaMap').textContent = hasMap ? rawMap : (rawMap || D.title || 'SCRIM');
+    $('arenaSub').textContent = M < 0 ? '첫 매치 결과를 기다리고 있어요' : (only ? '이 매치 결과 기준 TOP 3' : 'MATCH 1–' + mi + ' 누적 TOP 3');
+    $('podwrap').hidden = false;
     $('podium').hidden = !started;
     if (started){
       $('podium').innerHTML = rows.slice(0, 3).map(function(r){
