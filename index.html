@@ -21,6 +21,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);-webkit-font-smoothing:antialiased}
 body{min-height:100vh;
   background:
@@ -252,8 +253,9 @@ body.obs .obs-head{display:flex}
     <div class="navr">
       <select id="pick" aria-label="스크림 시트 선택" hidden></select>
       <span class="live" id="live"><i></i><span id="liveT">CONNECTING</span></span>
-      <button class="obs-btn ghost" id="logoBtn" aria-haspopup="dialog">로고</button>
-      <button class="obs-btn" id="obsBtn" aria-haspopup="dialog">OBS</button>
+      <a class="obs-btn ghost" id="adminLink" href="admin.html" hidden style="display:inline-flex;align-items:center;text-decoration:none">관리자</a>
+      <button class="obs-btn ghost" id="logoBtn" aria-haspopup="dialog" hidden>로고</button>
+      <button class="obs-btn" id="obsBtn" aria-haspopup="dialog" hidden>OBS</button>
       <button class="icon-btn" id="full" title="전체 화면" aria-label="전체 화면"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4"/></svg></button>
     </div>
   </nav>
@@ -321,7 +323,6 @@ body.obs .obs-head{display:flex}
         <label class="drop" id="drop" for="lfile">이미지<br>선택 / 끌어놓기</label>
         <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
           <div class="fld">선택한 팀<input id="lteam" readonly placeholder="위에서 팀을 눌러 주세요"></div>
-          <div class="fld">관리자 비밀번호<input id="lkey" type="password" autocomplete="current-password" placeholder="시트에서 정한 비밀번호"></div>
         </div>
       </div>
       <input type="file" id="lfile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden>
@@ -330,7 +331,7 @@ body.obs .obs-head{display:flex}
     </div>
   </div>
 
-  <footer><b>ESC SCRIM</b><span id="foot">&nbsp;</span></footer>
+  <footer><b>ESC SCRIM</b><span><span id="foot">&nbsp;</span> · <a href="admin.html" id="footAdmin" style="color:var(--dim)">관리자 로그인</a></span></footer>
 </div>
 
 <script>
@@ -500,6 +501,7 @@ body.obs .obs-head{display:flex}
   }
   function upd(){ var u = obsUrl(); $('oUrl').value = u; var pv = new URL(u); pv.searchParams.set('preview', '1'); $('oOpen').href = pv.toString(); }
   $('obsBtn').onclick = function(){
+    if (!ADM) return;
     var o = '<option value="">최신 매치 자동</option>';
     if (D) for (var m = 0; m < D.matches; m++){ var mp = String((D.maps && D.maps[m]) || '').replace(/[^A-Za-z0-9가-힣]+$/, '').trim(); o += '<option value="' + (m + 1) + '">MATCH ' + (m + 1) + (mp ? ' · ' + esc(mp) : '') + '</option>'; }
     var keep = $('oMatch').value; $('oMatch').innerHTML = o; $('oMatch').value = keep;
@@ -523,7 +525,19 @@ body.obs .obs-head{display:flex}
     $('lgrid').innerHTML = D.teams.map(function(t){ return '<button class="lt" data-n="' + t.n + '" aria-pressed="' + (lsel && lsel.n === t.n) + '">' + logoHTML(t) + '<span>' + esc(t.name) + '</span></button>'; }).join('');
   }
   function lmsg(t, cls){ $('lmsg').textContent = t; $('lmsg').className = 'stat-msg' + (cls ? ' ' + cls : ''); }
-  $('logoBtn').onclick = function(){ try { $('lkey').value = sessionStorage.getItem('esc_key') || ''; } catch (e) {} lgridRender(); lmsg(''); $('ldlg').hidden = false; };
+  // ── 관리자 로그인 상태 (관리자 페이지에서 로그인) ──
+  var ADM = null;
+  function admLoad(){ try { return JSON.parse(localStorage.getItem('esc_admin') || 'null'); } catch (e) { return null; } }
+  function admShow(on){ ['logoBtn', 'obsBtn', 'adminLink'].forEach(function(id){ $(id).hidden = !on; }); $('footAdmin').textContent = on ? '관리자 페이지' : '관리자 로그인'; if (!on){ $('ldlg').hidden = true; $('dlg').hidden = true; } }
+  function admPost(body){
+    body.token = ADM && ADM.token;
+    return fetch(API, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if (j && j.error){ if (/로그인이 (필요|만료)|계정이 없어요/.test(j.error)){ ADM = null; try { localStorage.removeItem('esc_admin'); } catch (e) {} admShow(false); } throw new Error(j.error); } return j; });
+  }
+  ADM = admLoad(); admShow(!!ADM);
+  if (ADM) admPost({ action: 'me' }).then(function(){ admShow(true); }).catch(function(){});
+  $('logoBtn').onclick = function(){ if (!ADM) return; lgridRender(); lmsg(''); $('ldlg').hidden = false; };
   $('ldlgX').onclick = function(){ $('ldlg').hidden = true; };
   $('ldlg').onclick = function(e){ if (e.target === this) this.hidden = true; };
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') $('ldlg').hidden = true; });
@@ -555,16 +569,11 @@ body.obs .obs-head{display:flex}
   ['dragleave', 'drop'].forEach(function(ev){ $('drop').addEventListener(ev, function(e){ e.preventDefault(); this.classList.remove('over'); }); });
   $('drop').addEventListener('drop', function(e){ readFile(e.dataTransfer.files[0]); });
   $('lsend').onclick = function(){
-    var key = $('lkey').value.trim();
     if (!lsel) return lmsg('먼저 팀을 골라 주세요.', 'err');
     if (!ldata) return lmsg('이미지를 골라 주세요.', 'err');
-    if (!key) return lmsg('관리자 비밀번호를 입력해 주세요.', 'err');
     var b = this; b.disabled = true; lmsg('올리는 중…');
-    fetch(API, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'logo', key: key, name: lsel.name, data: ldata }) })
-      .then(function(r){ return r.json(); })
+    admPost({ action: 'logo', name: lsel.name, data: ldata })
       .then(function(j){
-        if (j.error) throw new Error(j.error);
-        try { sessionStorage.setItem('esc_key', key); } catch (e) {}
         lmsg(lsel.name + ' 로고를 올렸어요.', 'ok');
         ldata = ''; $('drop').innerHTML = '이미지<br>선택 / 끌어놓기';
         lastSig = ''; load(); setTimeout(lgridRender, 2500);
