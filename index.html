@@ -80,7 +80,18 @@ h1{margin:10px 0 6px;font-family:var(--disp);font-weight:800;font-size:clamp(46p
 .seg button[aria-pressed="true"]{background:var(--panel2);color:var(--text);box-shadow:inset 0 -2px 0 var(--y)}
 
 /* podium */
-.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.podwrap{position:relative;margin-bottom:22px}
+.podwrap[hidden]{display:none}
+.mapban{position:relative;display:none;border:1px solid var(--line);overflow:hidden;background:#d4d4d4}
+.has-map .mapban{display:block}
+.mapban img{display:block;width:100%;height:auto;aspect-ratio:826/316;object-fit:cover;object-position:center}
+.mapban::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(12,13,15,0) 0,rgba(12,13,15,0) 86%,rgba(12,13,15,.7) 100%)}
+.mapchip{position:absolute;right:14px;top:12px;z-index:1;background:rgba(12,13,15,.78);color:var(--text);font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;padding:6px 10px 5px;border-left:3px solid var(--y)}
+.mapchip{display:none!important}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.has-map .podium{position:relative;z-index:1;margin-top:-34px;padding:0 18px}
+.has-map .pc{background:linear-gradient(160deg,rgba(26,28,33,.9),rgba(21,23,27,.94) 60%);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.has-map .pc.p1{background:linear-gradient(160deg,rgba(70,52,10,.92),rgba(21,23,27,.95) 62%)}
 .pc{position:relative;background:linear-gradient(160deg,var(--panel2),var(--panel) 60%);border:1px solid var(--line);padding:20px 20px 18px;overflow:hidden;min-width:0}
 .pc::after{content:attr(data-pos);position:absolute;right:-6px;top:-22px;font-family:var(--disp);font-weight:800;font-size:150px;line-height:1;color:rgba(255,255,255,.035);pointer-events:none}
 .pc.p1{border-color:rgba(242,169,0,.55);background:linear-gradient(160deg,rgba(242,169,0,.16),var(--panel) 62%)}
@@ -138,6 +149,7 @@ footer b{font-family:var(--disp);letter-spacing:.2em;color:var(--muted);font-wei
 @keyframes fade{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
 
 @media (max-width:900px){
+  .has-map .podium{margin-top:10px;padding:0}
   .hero{grid-template-columns:minmax(0,1fr)}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stat:nth-child(3){border-left:0}
@@ -243,7 +255,10 @@ body.obs .obs-head{display:flex}
     </div>
   </div>
 
-  <section class="podium" id="podium"></section>
+  <section class="podwrap" id="podwrap">
+    <div class="mapban"><img id="mapimg" alt="" decoding="async"><span class="mapchip" id="mapchip"></span></div>
+    <div class="podium" id="podium"></div>
+  </section>
 
   <section class="board cut" id="board">
     <div class="obs-head"><div class="t" id="oT">ESC SCRIM</div><div class="m" id="oM">OVERALL</div></div>
@@ -369,6 +384,14 @@ body.obs .obs-head{display:flex}
 
     // podium
     var started = M >= 0 && rows.some(function(r){ return r.pts > 0; });
+    var MAPS = { erangel: 1, miramar: 1, taego: 1, rondo: 1, vikendi: 1, deston: 1 }, KMAP = { '에란겔': 'erangel', '미라마': 'miramar', '태이고': 'taego', '론도': 'rondo', '비켄디': 'vikendi', '데스턴': 'deston' };
+    var rawMap = String((D.maps && D.maps[Math.max(M, 0)]) || '').replace(/[^A-Za-z0-9가-힣]+$/, '').trim();
+    var mk = KMAP[rawMap] || rawMap.toLowerCase().replace(/[^a-z]/g, '');
+    var hasMap = !!MAPS[mk];
+    $('podwrap').classList.toggle('has-map', hasMap);
+    if (hasMap && $('mapimg').getAttribute('src') !== 'assets/maps/' + mk + '.jpg') { $('mapimg').src = 'assets/maps/' + mk + '.jpg'; $('mapimg').alt = rawMap + ' 맵'; }
+    $('mapchip').textContent = hasMap ? 'Match ' + (Math.max(M, 0) + 1) + ' · ' + rawMap : '';
+    $('podwrap').hidden = !started && !hasMap;
     $('podium').hidden = !started;
     if (started){
       $('podium').innerHTML = rows.slice(0, 3).map(function(r){
