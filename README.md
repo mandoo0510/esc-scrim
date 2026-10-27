@@ -6,7 +6,7 @@
 - 데이터: ESC SCRIM 구글 시트 점수판 → Google Apps Script 웹앱(JSON) → 이 페이지가 10초마다 자동 갱신
 - 다른 시트 보기: 주소 끝에 `?id=시트ID`
 - 방송(OBS)용 투명 화면: https://mandoo510.github.io/esc-scrim/obs.html (사이트 오른쪽 위 OBS 버튼에서 옵션 골라 주소 복사)
-  - `?match=2` 매치 고정 · `&mode=one` 이 매치만 · `&top=10` 상위 N팀 · `&scale=1.3` 크기 · `&preview=1` 체크무늬 배경 미리보기
+  - `?match=2` 매치 고정 · `&mode=one` 이 매치만 · `&top=10` 상위 N팀 · `&scale=1.3` 크기 · `&bg=0.7` 배경 진하기(기본 0.55 반투명) · `&preview=1` 체크무늬 배경 미리보기
 
 Apps Script를 새로 배포해서 주소가 바뀌면 `index.html` 위쪽의 `API` 값만 고치면 됩니다.
 
