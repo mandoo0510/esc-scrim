@@ -91,6 +91,14 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
     rows.forEach(function(r, k){ r.pos = k + 1; });
     return rows;
   }
+  var MAXLEN = q.get('max') ? Math.max(3, parseInt(q.get('max'), 10)) : 8;
+  function shortName(n){
+    n = String(n || '').trim();
+    if (n.length <= MAXLEN) return n;
+    var w = n.split(/\s+/).filter(Boolean);
+    if (w.length > 1) return w.map(function(x){ return x.charAt(0); }).join('').toUpperCase();
+    return n.slice(0, MAXLEN);
+  }
   function logo(t){ return t.logo && logos[t.logo] ? '<span class="lg"><img src="' + logos[t.logo] + '" alt="" onerror="this.remove()"></span>' : '<span class="lg">' + esc(String(t.name).charAt(0).toUpperCase()) + '</span>'; }
   function render(){
     var L = latest(), M = FIX == null ? L : Math.min(FIX, D.matches - 1), only = ONLY && M >= 0;
@@ -105,7 +113,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
       var c = '<div class="chg"></div>';
       if (prev[r.t.n]) { var d = prev[r.t.n] - r.pos; c = d > 0 ? '<div class="chg up"><i>▲</i>' + d + '</div>' : d < 0 ? '<div class="chg down"><i>▼</i>' + (-d) + '</div>' : '<div class="chg same">–</div>'; }
       var moved = lastPos[r.t.n] && lastPos[r.t.n] !== r.pos;
-      return '<div class="row r' + r.pos + (moved ? ' flash' : '') + '"><div class="rk">' + r.pos + '</div>' + c + logo(r.t) + '<div class="nm"><b>' + esc(r.t.name) + '</b></div><div class="pts">' + r.pts + '</div><div class="k">' + r.kills + '</div></div>';
+      return '<div class="row r' + r.pos + (moved ? ' flash' : '') + '"><div class="rk">' + r.pos + '</div>' + c + logo(r.t) + '<div class="nm"><b title="' + esc(r.t.name) + '">' + esc(shortName(r.t.name)) + '</b></div><div class="pts">' + r.pts + '</div><div class="k">' + r.kills + '</div></div>';
     }).join('');
     var w = 0, ns = document.querySelectorAll('.nm');
     for (var j = 0; j < ns.length; j++){ var t = 14; for (var k = 0; k < ns[j].children.length; k++) t += ns[j].children[k].scrollWidth + 6; if (t > w) w = t; }
