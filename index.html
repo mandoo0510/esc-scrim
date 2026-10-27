@@ -306,8 +306,9 @@ body.obs .obs-head{display:flex}
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function api(params){
+    params._ = Date.now();
     var u = API + '?' + new URLSearchParams(params).toString();
-    return fetch(u, { redirect: 'follow' }).then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    return fetch(u, { redirect: 'follow', cache: 'no-store' }).then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function(j){ if (j && j.error) throw new Error(j.error); return j; });
   }
   function played(m){ return D.res[m] && D.res[m].some(function(x){ return x.r; }); }
@@ -435,6 +436,7 @@ body.obs .obs-head{display:flex}
 
   function obsUrl(){
     var base = new URL('obs.html', location.href), p = base.searchParams;
+    p.set('v', Date.now().toString(36));
     if (ID !== DEFAULT_ID) p.set('id', ID);
     if ($('oMatch').value) p.set('match', $('oMatch').value);
     if ($('oMode').value) p.set('mode', $('oMode').value);
@@ -482,7 +484,7 @@ body.obs .obs-head{display:flex}
     rd.onload = function(){
       var img = new Image();
       img.onload = function(){
-        var S = 256, c = document.createElement('canvas'), k = Math.min(S / img.width, S / img.height, 1);
+        var S = 160, c = document.createElement('canvas'), k = Math.min(S / img.width, S / img.height, 1);
         c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
         c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
         ldata = c.toDataURL('image/png');

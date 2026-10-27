@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>ESC SCRIM · OBS Overlay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,7 +78,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
   var D = null, logos = {}, asked = {}, lastPos = {}, lastSig = '';
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  function api(p){ return fetch(API + '?' + new URLSearchParams(p), { credentials: 'omit' }).then(function(r){ return r.json(); }).then(function(j){ if (j && j.error) throw new Error(j.error); return j; }); }
+  function api(p){ p._ = Date.now(); return fetch(API + '?' + new URLSearchParams(p), { credentials: 'omit', cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){ if (j && j.error) throw new Error(j.error); return j; }); }
   function played(m){ return D.res[m] && D.res[m].some(function(x){ return x.r; }); }
   function latest(){ for (var m = D.matches - 1; m >= 0; m--) if (played(m)) return m; return -1; }
   function standings(M, only){
@@ -90,7 +91,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
     rows.forEach(function(r, k){ r.pos = k + 1; });
     return rows;
   }
-  function logo(t){ return t.logo && logos[t.logo] ? '<span class="lg"><img src="' + logos[t.logo] + '" alt=""></span>' : '<span class="lg">' + esc(String(t.name).charAt(0).toUpperCase()) + '</span>'; }
+  function logo(t){ return t.logo && logos[t.logo] ? '<span class="lg"><img src="' + logos[t.logo] + '" alt="" onerror="this.remove()"></span>' : '<span class="lg">' + esc(String(t.name).charAt(0).toUpperCase()) + '</span>'; }
   function render(){
     var L = latest(), M = FIX == null ? L : Math.min(FIX, D.matches - 1), only = ONLY && M >= 0;
     var map = String((D.maps && D.maps[M]) || '').replace(/[^A-Za-z0-9가-힣]+$/, '').trim();
