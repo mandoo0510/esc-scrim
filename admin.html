@@ -184,7 +184,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:24px 0 20px}
       <p class="d">고르면 리더보드 · 방송 화면 · 관리자 페이지 로고가 자동으로 바뀌어요. 시트와 점수는 그대로예요.</p>
       <div class="brands" id="brands" role="radiogroup" aria-label="스크림 종류">
         <button class="bcard" role="radio" data-b="esc" aria-checked="false"><img src="assets/logo-esc-sm.png?v=5" alt="" width="360" height="136"><span>ESC SCRIM</span></button>
-        <button class="bcard" role="radio" data-b="ladies" aria-checked="false"><img src="assets/logo-ladies-sm.png?v=5" alt="" width="360" height="142"><span>ESC LADIES SCRIM</span></button>
+        <button class="bcard" role="radio" data-b="ladies" aria-checked="false"><img src="assets/logo-ladies-sm.png?v=6" alt="" width="360" height="142"><span>ESC LADIES SCRIM</span></button>
       </div>
       <div class="msg" id="bMsg" role="status"></div>
       <hr class="sep">
@@ -238,7 +238,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:24px 0 20px}
     var n = b === 'ladies' ? 'ladies' : 'esc', alt = n === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM';
     try { localStorage.setItem('esc_brand', n); } catch (e) {}
     [].forEach.call(document.querySelectorAll('img[data-logo]'), function(im){
-      var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=5';
+      var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=6';
       if (im.getAttribute('src') !== src){ im.src = src; im.alt = alt; }
     });
   }

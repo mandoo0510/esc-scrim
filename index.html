@@ -370,7 +370,7 @@ body.obs .obs-head{display:flex}
     var n = b === 'ladies' ? 'ladies' : 'esc', alt = n === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM';
     try { localStorage.setItem('esc_brand', n); } catch (e) {}
     [].forEach.call(document.querySelectorAll('img[data-logo]'), function(im){
-      var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=5';
+      var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=6';
       if (im.getAttribute('src') !== src){ im.src = src; im.alt = alt; }
     });
   }
