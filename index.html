@@ -100,6 +100,18 @@ h1{margin:10px 0 6px;font-family:var(--disp);font-weight:800;font-size:clamp(46p
 .arena-map{margin-top:8px;font-family:var(--disp);font-weight:800;font-size:clamp(46px,7.2vw,92px);line-height:.88;letter-spacing:.03em;text-transform:uppercase;color:#F5F2EA;text-shadow:0 6px 40px rgba(0,0,0,.55)}
 .arena-sub{margin-top:10px;font-size:13px;color:rgba(236,232,223,.62);letter-spacing:.02em}
 .podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end}
+/* art mode: full panorama banner (map name is printed in the art) */
+.arena.art{padding:0;container-type:inline-size;background:#0b0c0e}
+.arena.art .arena-bg{position:relative;inset:auto;z-index:0;aspect-ratio:2057/764}
+.arena.art .arena-bg img{filter:none;transform:none;object-position:center}
+.arena.art .arena-bg img.on{transform:none}
+.arena.art .arena-bg::after{background:linear-gradient(180deg,rgba(11,12,14,0) 0,rgba(11,12,14,0) 74%,rgba(11,12,14,.65) 90%,#0b0c0e 100%)}
+.arena.art::before{display:none}
+.arena.art .arena-head{position:absolute;left:3.75cqw;top:34.6cqw;top:calc(100cqw * 764 / 2057 * .33);padding:0;z-index:1}
+.arena.art .arena-eb{font-size:max(11px,1.05cqw);letter-spacing:.3em;gap:max(10px,1.25cqw);text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.arena.art .arena-eb::before{width:max(18px,2.5cqw);height:max(1px,.1cqw)}
+.arena.art .arena-map,.arena.art .arena-sub{display:none}
+.arena.art .podium{position:relative;z-index:1;margin-top:-5cqw;padding:0 24px 24px}
 .podium[hidden]{display:none}
 .podium .p1{order:2}.podium .p2{order:1}.podium .p3{order:3}
 .arena .pc{--rc:var(--silver);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
@@ -172,6 +184,13 @@ footer b{font-family:var(--disp);letter-spacing:.2em;color:var(--muted);font-wei
 
 @media (max-width:900px){
   .arena{padding:22px 16px 16px}
+  .arena.art{padding:0}
+  .arena.art .podium{margin-top:10px;padding:0 12px 12px}
+  .arena.art .arena-bg{aspect-ratio:4/3}
+  .arena.art .arena-bg img{object-position:0 50%}
+  .arena.art .arena-head{left:7.6cqw;top:calc(75cqw * .33)}
+  .arena.art .arena-eb{font-size:max(10px,2.1cqw);gap:2.5cqw}
+  .arena.art .arena-eb::before{width:5cqw}
   .podium .p1,.podium .p2,.podium .p3{order:0}
   .arena .pc.p1{padding:20px 18px 18px}
   .arena-head{padding-bottom:92px}
@@ -415,7 +434,8 @@ body.obs .obs-head{display:flex}
     var rawMap = String((D.maps && D.maps[Math.max(M, 0)]) || '').replace(/[^A-Za-z0-9가-힣]+$/, '').trim();
     var mk = KMAP[rawMap] || rawMap.toLowerCase().replace(/[^a-z]/g, '');
     var hasMap = !!MAPS[mk];
-    var img = $('mapimg'), want = hasMap ? 'assets/maps/' + mk + '.jpg' : '';
+    $('podwrap').classList.toggle('art', hasMap);
+    var img = $('mapimg'), want = hasMap ? 'assets/maps/' + mk + '.jpg?v=2' : '';
     if (img.getAttribute('data-src') !== want){
       img.setAttribute('data-src', want); img.classList.remove('on');
       if (want){ img.onload = function(){ img.classList.add('on'); }; img.src = want; } else img.removeAttribute('src');
