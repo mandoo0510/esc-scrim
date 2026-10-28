@@ -26,7 +26,7 @@ button,input,select{font:inherit;color:inherit}
 .cut{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
 nav{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}
-.brand img{height:44px;width:auto;display:block}
+.brand img{height:40px;width:auto;display:block}
 .brand b{font-family:var(--disp);font-weight:700;font-size:20px;letter-spacing:.18em;text-transform:uppercase}
 .navr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .who{font-size:13px;color:var(--muted)}
@@ -63,7 +63,7 @@ input.i:focus,select.i:focus{outline:none;border-color:var(--y)}
 /* login */
 .login{max-width:400px;margin:9vh auto 0}
 .login .card{padding:28px}
-.login img{display:block;height:120px;width:auto;margin:0 auto 10px}
+.login img{display:block;width:100%;max-width:300px;height:auto;margin:0 auto 14px}
 .login h2{text-align:center}
 .login p.d{text-align:center}
 .login form{display:flex;flex-direction:column;gap:12px}
@@ -105,7 +105,7 @@ td .btn{height:32px;padding:0 10px;font-size:12px}
 <body>
 <div class="wrap">
   <nav>
-    <a class="brand" href="./"><img src="assets/logo-sm.png" alt="ESC SCRIM" width="64" height="48"><b>관리자</b></a>
+    <a class="brand" href="./"><img src="assets/logo-sm.png?v=2" alt="ESC SCRIM" width="100" height="40"><b>관리자</b></a>
     <div class="navr">
       <span class="who" id="who" hidden></span>
       <a class="btn" href="./">리더보드 보기</a>
@@ -116,7 +116,7 @@ td .btn{height:32px;padding:0 10px;font-size:12px}
   <!-- 로그인 -->
   <section class="login" id="loginView" hidden>
     <div class="card cut">
-      <img src="assets/logo.png" alt="ESC SCRIM" width="640" height="482">
+      <img src="assets/logo.png?v=2" alt="ESC SCRIM" width="900" height="361">
       <h2>관리자 로그인</h2>
       <p class="d">받은 관리자 아이디와 비밀번호로 로그인해 주세요.</p>
       <form id="loginForm" autocomplete="on">
