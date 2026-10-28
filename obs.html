@@ -55,7 +55,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
 </head>
 <body>
 <div class="ov" id="ov">
-  <div class="head"><div class="tag" id="tag"><img src="assets/logo-sm.png?v=4" alt="ESC SCRIM" onerror="this.parentNode.classList.add('txt');this.remove()"><span id="tagT">ESC SCRIM</span></div><div class="mt"><b id="mt">OVERALL</b><small id="ms">&nbsp;</small></div></div>
+  <div class="head"><div class="tag" id="tag"><img data-logo="sm" src="assets/logo-esc-sm.png?v=5" alt="ESC SCRIM" onerror="this.parentNode.classList.add('txt');this.remove()"><span id="tagT">ESC SCRIM</span></div><div class="mt"><b id="mt">OVERALL</b><small id="ms">&nbsp;</small></div></div>
   <div class="cols"><span class="h">#</span><span class="t">Team</span><span>Pts</span><span>Kills</span></div>
   <div class="list" id="list"><div class="msg">불러오는 중…</div></div>
   <div class="foot"></div>
@@ -77,6 +77,17 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
 
   var D = null, logos = {}, asked = {}, lastPos = {}, lastSig = '';
   function $(id){ return document.getElementById(id); }
+  // ── 스크림 종류(로고) ──
+  function applyBrand(b){
+    var n = b === 'ladies' ? 'ladies' : 'esc', alt = n === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM';
+    try { localStorage.setItem('esc_brand', n); } catch (e) {}
+    [].forEach.call(document.querySelectorAll('img[data-logo]'), function(im){
+      var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=5';
+      if (im.getAttribute('src') !== src){ im.src = src; im.alt = alt; }
+    });
+  }
+  try { applyBrand(localStorage.getItem('esc_brand')); } catch (e) { applyBrand('esc'); }
+
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function api(p){ p._ = Date.now(); return fetch(API + '?' + new URLSearchParams(p), { credentials: 'omit', cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){ if (j && j.error) throw new Error(j.error); return j; }); }
   function played(m){ return D.res[m] && D.res[m].some(function(x){ return x.r; }); }
@@ -123,7 +134,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
   function load(){
     api({ api: 'board', id: ID }).then(function(d){
       var sig = JSON.stringify([d.res, d.teams, d.title, d.maps]);
-      D = d; if (sig !== lastSig){ lastSig = sig; render(); }
+      D = d; applyBrand(d.brand); if (sig !== lastSig){ lastSig = sig; render(); }
       var ids = d.teams.map(function(t){ return t.logo; }).filter(function(id){ return id && !asked[id]; });
       if (ids.length){ ids.forEach(function(id){ asked[id] = 1; }); api({ api: 'logos', ids: ids.join(',') }).then(function(o){ for (var k in o) if (o[k]) logos[k] = o[k]; render(); }).catch(function(){}); }
     }).catch(function(e){ if (!D) $('list').innerHTML = '<div class="msg">' + esc(e.message) + '</div>'; });
