@@ -160,6 +160,11 @@ h1{margin:10px 0 6px;font-family:var(--disp);font-weight:800;font-size:clamp(46p
 .det{padding:14px 22px 18px 108px;border-bottom:1px solid var(--line);background:rgba(10,11,13,.6)}
 .det-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
 .det-h b{color:var(--text);font-weight:700}
+.roster{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed var(--line2)}
+.pp{display:inline-flex;align-items:center;gap:7px;padding:6px 11px 6px 6px;background:var(--panel2);border:1px solid var(--line2);font-size:13.5px;font-weight:700;max-width:100%;min-width:0}
+.pp i{font-style:normal;font-size:11px;font-weight:700;padding:2px 6px;background:rgba(255,255,255,.07);color:var(--muted);flex:none}
+.pp.lead i{background:var(--y);color:var(--yink)}
+.pp.rep i{background:rgba(242,169,0,.18);color:var(--y)}
 .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
 .dm{background:var(--panel2);border:1px solid var(--line);padding:10px 12px;min-width:0}
 .dm.cur{border-color:rgba(242,169,0,.5)}
@@ -357,7 +362,7 @@ body.obs .obs-head{display:flex}
   </section>
   <div class="note">
     <div class="legend"><span><i style="background:var(--y)"></i>치킨 (1등)</span><span><i style="border:1px solid var(--line2);background:var(--panel2)"></i>매치 순위</span><span style="color:var(--up)">▲</span><span style="color:var(--down)">▼</span><span>이전 매치 대비 변동</span></div>
-    <div>팀을 누르면 매치별 순위 · 킬 · 순위 점수를 볼 수 있어요</div>
+    <div>팀을 누르면 팀원과 매치별 순위 · 킬 · 순위 점수를 볼 수 있어요</div>
   </div>
 
   <div class="dlg" id="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dlgT">
@@ -549,7 +554,12 @@ body.obs .obs-head{display:flex}
         + '<div class="rk2' + (x.r === 1 ? ' w' : '') + '">' + (x.r === 1 ? '★ ' : '') + x.r + '위</div>'
         + '<dl><dt>킬</dt><dd>' + x.k + '킬 · ' + x.k + '점</dd><dt>순위 점수</dt><dd>' + pl + '점</dd><dt>합계</dt><dd class="sum">' + x.p + '점</dd></dl></div>';
     }
-    return '<div class="det"><div class="det-h"><span><b>' + esc(r.t.name) + '</b> 매치별 기록</span><span>킬 ' + r.kills + '점 + 순위 ' + r.place + '점 = <b>' + r.pts + '점</b></span></div><div class="dgrid">' + cards + '</div></div>';
+    var ro = r.t.roster, people = '';
+    if (ro){
+      var chip = function(role, name, cls){ return name ? '<span class="pp' + (cls ? ' ' + cls : '') + '"><i>' + role + '</i>' + esc(name) + '</span>' : ''; };
+      people = '<div class="roster">' + chip('대표', ro.rep, 'rep') + chip('팀장', ro.lead, 'lead') + (ro.members || []).map(function(n){ return chip('팀원', n); }).join('') + '</div>';
+    }
+    return '<div class="det">' + people + '<div class="det-h"><span><b>' + esc(r.t.name) + '</b> 매치별 기록</span><span>킬 ' + r.kills + '점 + 순위 ' + r.place + '점 = <b>' + r.pts + '점</b></span></div><div class="dgrid">' + cards + '</div></div>';
   }
   function renderPtsTable(){
     var played = []; for (var m = 0; m < D.matches; m++) if (D.res[m].some(function(x){ return x && x.r; })) played.push(m);
