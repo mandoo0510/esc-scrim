@@ -557,7 +557,7 @@ body.obs .obs-head{display:flex}
     var ro = r.t.roster, people = '';
     if (ro){
       var chip = function(role, name, cls){ return name ? '<span class="pp' + (cls ? ' ' + cls : '') + '"><i>' + role + '</i>' + esc(name) + '</span>' : ''; };
-      people = '<div class="roster">' + chip('대표', ro.rep, 'rep') + chip('팀장', ro.lead, 'lead') + (ro.members || []).map(function(n){ return chip('팀원', n); }).join('') + '</div>';
+      people = '<div class="roster">' + chip('클랜마스터', ro.rep, 'rep') + chip('팀장', ro.lead, 'lead') + (ro.members || []).map(function(n){ return chip('팀원', n); }).join('') + '</div>';
     }
     return '<div class="det">' + people + '<div class="det-h"><span><b>' + esc(r.t.name) + '</b> 매치별 기록</span><span>킬 ' + r.kills + '점 + 순위 ' + r.place + '점 = <b>' + r.pts + '점</b></span></div><div class="dgrid">' + cards + '</div></div>';
   }
