@@ -66,6 +66,20 @@ h1{margin:10px 0 6px;font-family:var(--disp);font-weight:800;font-size:clamp(46p
 .stat strong{display:block;font-family:var(--disp);font-weight:700;font-size:30px;line-height:1.05;white-space:nowrap}
 .stat strong small{font-size:16px;color:var(--muted);font-weight:600}
 
+/* 회차 */
+.eps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 18px}
+.eps[hidden]{display:none}
+.eps .lab{font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin-right:4px}
+.ep{display:inline-flex;align-items:baseline;gap:8px;border:1px solid var(--line2);background:var(--panel);color:var(--text);padding:7px 14px 6px;text-decoration:none;transition:border-color .15s,background .15s}
+.ep:hover{border-color:#4A4E56}
+.ep b{font-family:var(--disp);font-weight:800;font-size:18px;letter-spacing:.06em;line-height:1}
+.ep small{font-size:11px;color:var(--muted);white-space:nowrap}
+.ep .lv{font-family:var(--disp);font-weight:700;font-size:10px;letter-spacing:.14em;color:#3DDC84;align-self:center}
+.ep[aria-current="page"]{background:var(--y);border-color:var(--y);color:var(--yink)}
+.ep[aria-current="page"] small,.ep[aria-current="page"] .lv{color:rgba(20,16,6,.72)}
+.eps .back{font-size:12px;color:var(--muted);margin-left:4px}
+.eps .back a{color:var(--y)}
+
 /* tabs */
 .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:6px 0 22px}
 .tabs{display:flex;flex-wrap:wrap;gap:6px}
@@ -318,7 +332,6 @@ body.obs .obs-head{display:flex}
   <nav>
     <a class="brand" href="./" aria-label="ESC SCRIM"><img class="navlogo" data-logo="sm" src="assets/logo-esc-sm.png?v=5" alt="ESC SCRIM" width="100" height="40"><b>Scrim Leaderboard</b></a>
     <div class="navr">
-      <select id="pick" aria-label="스크림 시트 선택" hidden></select>
       <span class="live" id="live"><i></i><span id="liveT">CONNECTING</span></span>
       <a class="obs-btn ghost" id="adminLink" href="admin.html" hidden style="display:inline-flex;align-items:center;text-decoration:none">관리자</a>
       <button class="obs-btn ghost" id="logoBtn" aria-haspopup="dialog" hidden>로고</button>
@@ -326,6 +339,8 @@ body.obs .obs-head{display:flex}
       <button class="icon-btn" id="full" title="전체 화면" aria-label="전체 화면"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4"/></svg></button>
     </div>
   </nav>
+
+  <div class="eps" id="eps" role="navigation" aria-label="회차별 기록" hidden></div>
 
   <header class="hero">
     <div>
@@ -409,7 +424,7 @@ body.obs .obs-head{display:flex}
 <script>
 (function(){
   var API = 'https://script.google.com/macros/s/AKfycbzJpd737Mo8J2tegE1xXX_sYjp7AiezjTcb7Qf2ggbSKvtYv_amYUSsMRFnL-NjDwmkeQ/exec';
-  var DEFAULT_ID = '1aNuWrDacxbF6_IkwmxXzc-y88YSGJ_20zs6xprR4eVo';
+  var DEFAULT_ID = ''; // 비워 두면 관리자 페이지에서 정한 '진행 중' 시트를 따라가요
   var REFRESH = 10000;
 
   var q = new URLSearchParams(location.search);
@@ -421,13 +436,13 @@ body.obs .obs-head{display:flex}
   // ── 스크림 종류(로고) ──
   function applyBrand(b){
     var n = b === 'ladies' ? 'ladies' : 'esc', alt = n === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM';
-    try { localStorage.setItem('esc_brand', n); } catch (e) {}
+    try { localStorage.setItem('esc_brand_' + (ID || 'live'), n); } catch (e) {}
     [].forEach.call(document.querySelectorAll('img[data-logo]'), function(im){
       var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=6';
       if (im.getAttribute('src') !== src){ im.src = src; im.alt = alt; }
     });
   }
-  try { applyBrand(localStorage.getItem('esc_brand')); } catch (e) { applyBrand('esc'); }
+  try { applyBrand(localStorage.getItem('esc_brand_' + (ID || 'live'))); } catch (e) { applyBrand('esc'); }
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function api(params){
@@ -583,7 +598,7 @@ body.obs .obs-head{display:flex}
   }
   function setLive(ok, t){ $('live').className = 'live' + (ok ? '' : ' off'); $('liveT').textContent = t; }
   function load(){
-    api({ api: 'board', id: ID }).then(function(d){
+    api(ID ? { api: 'board', id: ID, pin: 1 } : { api: 'board' }).then(function(d){
       var sig = JSON.stringify([d.res, d.teams, d.title, d.maps]);
       var first = !D; D = d; applyBrand(d.brand);
       setLive(true, 'LIVE · ' + d.at);
@@ -597,23 +612,28 @@ body.obs .obs-head{display:flex}
   function loadList(){
     api({ api: 'list' }).then(function(list){
       if (!list || list.length < 2) return;
-      var p = $('pick');
-      if (!list.some(function(x){ return x.id === ID; })) list.unshift({ id: ID, name: '현재 시트' });
-      p.innerHTML = list.map(function(x){ return '<option value="' + esc(x.id) + '"' + (x.id === ID ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('');
-      p.hidden = false;
+      var live = (list.filter(function(x){ return x.cur; })[0] || list[list.length - 1]).id, cur = ID || live;
+      var h = '<span class="lab">회차</span>';
+      list.forEach(function(x, i){
+        var nm = String(x.name || ''), m = nm.match(/(\d+)\s*회/), lab = (m ? m[1] : i + 1) + '회';
+        var sub = nm.replace(/^\s*ESC\s*(LADIES\s*)?SCRIM\s*/i, '').replace(/\d+\s*회/, '').trim();
+        var href = x.id === live ? './' : './?id=' + encodeURIComponent(x.id);
+        h += '<a class="ep" href="' + href + '"' + (x.id === cur ? ' aria-current="page"' : '') + ' title="' + esc(nm) + '"><b>' + esc(lab) + '</b>' + (sub ? '<small>' + esc(sub) + '</small>' : '') + (x.id === live ? '<span class="lv">LIVE</span>' : '') + '</a>';
+      });
+      if (cur !== live) h += '<span class="back">지난 회차 기록을 보고 있어요 · <a href="./">진행 중 회차로</a></span>';
+      $('eps').innerHTML = h; $('eps').hidden = false;
     }).catch(function(){});
   }
 
   $('tabs').addEventListener('click', function(e){ var b = e.target.closest('[data-m]'); if (!b) return; var m = +b.dataset.m; sel = (m === latest() && sel === null) ? null : m; render(); });
   $('mCum').onclick = function(){ mode = 'cum'; render(); };
   $('mOne').onclick = function(){ mode = 'one'; render(); };
-  $('pick').onchange = function(){ var u = new URL(location.href); u.searchParams.set('id', this.value); location.href = u.toString(); };
   $('full').onclick = function(){ var el = document.documentElement; if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(function(){}); else if (document.exitFullscreen) document.exitFullscreen().catch(function(){}); };
 
   function obsUrl(){
     var base = new URL('obs.html', location.href), p = base.searchParams;
     p.set('v', Date.now().toString(36));
-    if (ID !== DEFAULT_ID) p.set('id', ID);
+    if (ID) p.set('id', ID);
     if ($('oMatch').value) p.set('match', $('oMatch').value);
     if ($('oMode').value) p.set('mode', $('oMode').value);
     if ($('oTop').value) p.set('top', $('oTop').value);

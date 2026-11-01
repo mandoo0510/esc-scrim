@@ -63,7 +63,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
 <script>
 (function(){
   var API = 'https://script.google.com/macros/s/AKfycbzJpd737Mo8J2tegE1xXX_sYjp7AiezjTcb7Qf2ggbSKvtYv_amYUSsMRFnL-NjDwmkeQ/exec';
-  var DEFAULT_ID = '1aNuWrDacxbF6_IkwmxXzc-y88YSGJ_20zs6xprR4eVo';
+  var DEFAULT_ID = '';
   var q = new URLSearchParams(location.search);
   var ID = q.get('id') || DEFAULT_ID;
   var FIX = q.get('match') ? Math.max(1, parseInt(q.get('match'), 10)) - 1 : null;
@@ -80,13 +80,13 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
   // ── 스크림 종류(로고) ──
   function applyBrand(b){
     var n = b === 'ladies' ? 'ladies' : 'esc', alt = n === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM';
-    try { localStorage.setItem('esc_brand', n); } catch (e) {}
+    try { localStorage.setItem('esc_brand_' + (ID || 'live'), n); } catch (e) {}
     [].forEach.call(document.querySelectorAll('img[data-logo]'), function(im){
       var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=6';
       if (im.getAttribute('src') !== src){ im.src = src; im.alt = alt; }
     });
   }
-  try { applyBrand(localStorage.getItem('esc_brand')); } catch (e) { applyBrand('esc'); }
+  try { applyBrand(localStorage.getItem('esc_brand_' + (ID || 'live'))); } catch (e) { applyBrand('esc'); }
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function api(p){ p._ = Date.now(); return fetch(API + '?' + new URLSearchParams(p), { credentials: 'omit', cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){ if (j && j.error) throw new Error(j.error); return j; }); }
@@ -132,7 +132,7 @@ body.preview{background:repeating-conic-gradient(#2a2d33 0 25%,#1f2226 0 50%) 0 
     lastPos = {}; rows.forEach(function(r){ lastPos[r.t.n] = r.pos; });
   }
   function load(){
-    api({ api: 'board', id: ID }).then(function(d){
+    api(ID ? { api: 'board', id: ID, pin: 1 } : { api: 'board' }).then(function(d){
       var sig = JSON.stringify([d.res, d.teams, d.title, d.maps]);
       D = d; applyBrand(d.brand); if (sig !== lastSig){ lastSig = sig; render(); }
       var ids = d.teams.map(function(t){ return t.logo; }).filter(function(id){ return id && !asked[id]; });
