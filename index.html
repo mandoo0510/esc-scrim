@@ -435,7 +435,7 @@ body.obs .obs-head{display:flex}
   function $(id){ return document.getElementById(id); }
   // ── 스크림 종류(로고) ──
   function applyBrand(b){
-    var n = b === 'ladies' ? 'ladies' : 'esc', alt = n === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM';
+    var BN = { esc: 'ESC SCRIM', ladies: 'ESC LADIES SCRIM', mixed: 'ESC 혼성 스크림' }, n = BN[b] ? b : 'esc', alt = BN[n];
     try { localStorage.setItem('esc_brand_' + (ID || 'live'), n); } catch (e) {}
     [].forEach.call(document.querySelectorAll('img[data-logo]'), function(im){
       var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=6';

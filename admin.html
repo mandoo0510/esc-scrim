@@ -89,7 +89,7 @@ td .btn{height:32px;padding:0 10px;font-size:12px}
 .stats-row{display:flex;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
 .stats-row b{font-family:var(--disp);font-weight:800;font-size:26px;color:var(--text);margin-right:4px}
 .stats-row span{display:inline-flex;align-items:baseline;gap:4px;padding:10px 14px;background:var(--panel2);border:1px solid var(--line2)}
-.brands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:640px}
+.brands{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;max-width:860px}
 .bcard{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 12px 12px;border:1px solid var(--line2);background:#0B0C0E;cursor:pointer;min-width:0;position:relative}
 .bcard:hover{border-color:#4A4E56}
 .bcard img{width:100%;max-width:240px;height:auto;display:block}
@@ -185,6 +185,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:24px 0 20px}
       <div class="brands" id="brands" role="radiogroup" aria-label="스크림 종류">
         <button class="bcard" role="radio" data-b="esc" aria-checked="false"><img src="assets/logo-esc-sm.png?v=5" alt="" width="360" height="136"><span>ESC SCRIM</span></button>
         <button class="bcard" role="radio" data-b="ladies" aria-checked="false"><img src="assets/logo-ladies-sm.png?v=6" alt="" width="360" height="142"><span>ESC LADIES SCRIM</span></button>
+        <button class="bcard" role="radio" data-b="mixed" aria-checked="false"><img src="assets/logo-mixed-sm.png?v=6" alt="" width="360" height="150"><span>ESC 혼성 스크림</span></button>
       </div>
       <div class="msg" id="bMsg" role="status"></div>
       <hr class="sep">
@@ -249,7 +250,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:24px 0 20px}
   function $(id){ return document.getElementById(id); }
   // ── 스크림 종류(로고) ──
   function applyBrand(b){
-    var n = b === 'ladies' ? 'ladies' : 'esc', alt = n === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM';
+    var BN = { esc: 'ESC SCRIM', ladies: 'ESC LADIES SCRIM', mixed: 'ESC 혼성 스크림' }, n = BN[b] ? b : 'esc', alt = BN[n];
     try { localStorage.setItem('esc_brand', n); } catch (e) {}
     [].forEach.call(document.querySelectorAll('img[data-logo]'), function(im){
       var src = 'assets/logo-' + n + (im.getAttribute('data-logo') === 'sm' ? '-sm' : '') + '.png?v=6';
@@ -398,7 +399,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:24px 0 20px}
     [].forEach.call(all, function(x){ x.disabled = true; }); msg('bMsg', '바꾸는 중…');
     post({ action: 'setbrand', brand: b }).then(function(j){
       SH.brand = j.brand; renderBrand(); applyBrand(j.brand);
-      msg('bMsg', (j.brand === 'ladies' ? 'ESC LADIES SCRIM' : 'ESC SCRIM') + ' 로고로 바꿨어요. 리더보드와 방송 화면은 10초 안에 바뀌어요.', 'ok');
+      msg('bMsg', ({ esc: 'ESC SCRIM', ladies: 'ESC LADIES SCRIM', mixed: 'ESC 혼성 스크림' }[j.brand] || 'ESC SCRIM') + ' 로고로 바꿨어요. 리더보드와 방송 화면은 10초 안에 바뀌어요.', 'ok');
     }).catch(function(e){ msg('bMsg', e.message, 'err'); }).then(function(){ [].forEach.call(all, function(x){ x.disabled = false; }); });
   });
   function renderSheet(){
